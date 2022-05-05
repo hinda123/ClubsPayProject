@@ -1,0 +1,53 @@
+version: "3"
+services:
+  clubPayApp:
+    image: clubs-pay:1.0
+    container_name: backend
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    ports:
+      - 3000:3000
+    networks:
+      - postgres
+    restart: unless-stopped
+    depends_on:
+      - clubspayDB
+
+  clubspayDB:
+    container_name: clubspayDB
+    image: postgres
+    environment:
+      POSTGRES_USER: clubspay
+      POSTGRES_PASSWORD: password
+      PGDATA: /data/postgres
+    volumes:
+      - postgres:/data/postgres
+    ports:
+      - "5432:5432"
+    networks:
+      - postgres
+    restart: unless-stopped
+
+  clubspayDB_ADMIN:
+    container_name: clubspay_pgadmin
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: clubspay@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: abcd1234
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+    volumes:
+      - pgadmin:/var/lib/pgadmin
+    ports:
+      - "5050:80"
+    networks:
+      - postgres
+    restart: unless-stopped
+
+networks:
+  postgres:
+    driver: bridge
+
+volumes:
+  postgres:
+  pgadmin:

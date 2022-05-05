@@ -1,0 +1,58 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["referentialActions"]
+}
+
+model events {
+  id String @id @default(uuid())
+  title String
+  description String 
+  postedAt DateTime
+  media String?
+  mediaType String?
+}
+
+model mainClub {
+  id String @id @default(uuid())
+  clubType String
+  imageIcon String?
+  clubInfos clubInfo[]
+}
+
+
+model clubInfo {
+  id String @id @default(uuid())
+  title String
+  description String
+  imageCover String?
+  date DateTime?
+  price Decimal @default(0)
+  mClub mainClub @relation(fields: [mainClubId], references: [id], onDelete: Cascade)
+  mainClubId String 
+
+}
+
+model student {
+  id String @id @default(uuid())
+  name String
+  studentId String @unique
+  faculty String
+  email String @unique
+  password String
+  joindedAt DateTime?
+  clubs joinedClub[]
+}
+
+model joinedClub {
+   id String @id @default(uuid())
+   paymentType String
+   expireDateOnCash DateTime?
+   clubId String @unique
+  student student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  studentId String 
+}
